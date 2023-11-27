@@ -92,7 +92,7 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
   /**
    * Internal inline tools: Link, Bold, Italic
    */
-  private internalTools: {[name: string]: InlineToolConstructable} = {};
+  private internalTools: { [name: string]: InlineToolConstructable } = {};
 
   /**
    * Editor modules setter
@@ -387,7 +387,7 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
   private make(): void {
     this.nodes.wrapper = $.make('div', [
       this.CSS.inlineToolbar,
-      ...(this.isRtl ? [ this.Editor.UI.CSS.editorRtlFix ] : []),
+      ...(this.isRtl ? [this.Editor.UI.CSS.editorRtlFix] : []),
     ]);
     /**
      * Creates a different wrapper for toggler and buttons.
@@ -649,10 +649,15 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
     button.dataset.tool = toolName;
     this.nodes.buttons.appendChild(button);
     this.toolsInstances.set(toolName, tool);
-
     if (_.isFunction(tool.renderActions)) {
       const actions = tool.renderActions();
 
+      this.listeners.on(button, 'click', (event) => {
+        if (tool.linkType == 'link') {
+          this.config.onLink(actions)
+        }
+        event.preventDefault();
+      });
       this.nodes.actions.appendChild(actions);
     }
 
@@ -666,7 +671,7 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
     if (shortcut) {
       try {
         this.enableShortcuts(tool, shortcut);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     /**

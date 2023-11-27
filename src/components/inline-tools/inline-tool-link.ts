@@ -70,10 +70,14 @@ export default class LinkInlineTool implements InlineTool {
   private nodes: {
     button: HTMLButtonElement;
     input: HTMLInputElement;
+    div: HTMLDivElement;
+    searchInput: HTMLInputElement;
   } = {
-    button: null,
-    input: null,
-  };
+      button: null,
+      input: null,
+      div: null,
+      searchInput: null,
+    };
 
   /**
    * SelectionUtils instance
@@ -133,16 +137,26 @@ export default class LinkInlineTool implements InlineTool {
    * Input for the link
    */
   public renderActions(): HTMLElement {
+    // Create div
+    this.nodes.div = document.createElement('div') as HTMLDivElement
+    this.nodes.div.classList.add(this.CSS.input);
+    // Input
     this.nodes.input = document.createElement('input') as HTMLInputElement;
-    this.nodes.input.placeholder = this.i18n.t('Add a link');
-    this.nodes.input.classList.add(this.CSS.input);
+    this.nodes.input.type = 'hidden'
+    // Search Input
+    this.nodes.searchInput = document.createElement('input') as HTMLInputElement;
+    this.nodes.searchInput.placeholder = this.i18n.t('Search...');
+    this.nodes.searchInput.classList.add('custom');
+    this.nodes.searchInput.classList.add(this.CSS.input);
+    this.nodes.searchInput.classList.add(this.CSS.inputShowed);
     this.nodes.input.addEventListener('keydown', (event: KeyboardEvent) => {
       if (event.keyCode === this.ENTER_KEY) {
         this.enterPressed(event);
       }
     });
-
-    return this.nodes.input;
+    this.nodes.div.appendChild(this.nodes.input)
+    this.nodes.div.appendChild(this.nodes.searchInput)
+    return this.nodes.div;
   }
 
   /**
@@ -227,7 +241,9 @@ export default class LinkInlineTool implements InlineTool {
   public get shortcut(): string {
     return 'CMD+K';
   }
-
+  public get linkType(): string {
+    return 'link';
+  }
   /**
    * Show/close link input
    */
@@ -243,7 +259,7 @@ export default class LinkInlineTool implements InlineTool {
    * @param {boolean} needFocus - on link creation we need to focus input. On editing - nope.
    */
   private openActions(needFocus = false): void {
-    this.nodes.input.classList.add(this.CSS.inputShowed);
+    this.nodes.div.classList.add(this.CSS.inputShowed);
     if (needFocus) {
       this.nodes.input.focus();
     }
@@ -270,7 +286,7 @@ export default class LinkInlineTool implements InlineTool {
       currentSelection.restore();
     }
 
-    this.nodes.input.classList.remove(this.CSS.inputShowed);
+    this.nodes.div.classList.remove(this.CSS.inputShowed);
     this.nodes.input.value = '';
     if (clearSavedSelection) {
       this.selection.clearSaved();
@@ -370,8 +386,8 @@ export default class LinkInlineTool implements InlineTool {
      *     3) Protocol-relative URLs like "//google.com"
      */
     const isInternal = /^\/[^/\s]/.test(link),
-        isAnchor = link.substring(0, 1) === '#',
-        isProtocolRelative = /^\/\/[^/\s]/.test(link);
+      isAnchor = link.substring(0, 1) === '#',
+      isProtocolRelative = /^\/\/[^/\s]/.test(link);
 
     if (!isInternal && !isAnchor && !isProtocolRelative) {
       link = 'http://' + link;

@@ -1,5 +1,5 @@
-import {BaseTool, BaseToolConstructable} from './tool';
-import {API, ToolConfig} from "../index";
+import { BaseTool, BaseToolConstructable } from './tool';
+import { API, ToolConfig } from "../index";
 /**
  * Base structure for the Inline Toolbar Tool
  */
@@ -9,7 +9,7 @@ export interface InlineTool extends BaseTool {
    * @type {string}
    */
   shortcut?: string;
-
+  linkType?: string;
   /**
    * Method that accepts selected range and wrap it somehow
    * @param {Range} range - selection's range

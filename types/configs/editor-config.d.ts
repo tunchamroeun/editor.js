@@ -1,7 +1,7 @@
-import {ToolConstructable, ToolSettings} from '../tools';
-import {API, LogLevels, OutputData} from '../index';
-import {SanitizerConfig} from './sanitizer-config';
-import {I18nConfig} from './i18n-config';
+import { ToolConstructable, ToolSettings } from '../tools';
+import { API, LogLevels, OutputData } from '../index';
+import { SanitizerConfig } from './sanitizer-config';
+import { I18nConfig } from './i18n-config';
 
 export interface EditorConfig {
   /**
@@ -9,7 +9,6 @@ export interface EditorConfig {
    * @deprecated property will be removed in the next major release, use holder instead
    */
   holderId?: string | HTMLElement;
-
   /**
    * Element where Editor will be appended
    */
@@ -37,7 +36,7 @@ export interface EditorConfig {
   /**
    * First Block placeholder
    */
-  placeholder?: string|false;
+  placeholder?: string | false;
 
   /**
    * Define default sanitizer configuration
@@ -53,7 +52,7 @@ export interface EditorConfig {
   /**
    * Map of Tools to use
    */
-  tools?: {[toolName: string]: ToolConstructable|ToolSettings};
+  tools?: { [toolName: string]: ToolConstructable | ToolSettings };
 
   /**
    * Data to render on Editor start
@@ -90,9 +89,9 @@ export interface EditorConfig {
    * @param {API} api - editor.js api
    */
   onChange?(api: API): void;
-
+  onLink?(dom: HTMLElement): void;
   /**
    * Defines default toolbar for all tools.
    */
-  inlineToolbar?: string[]|boolean;
+  inlineToolbar?: string[] | boolean;
 }
