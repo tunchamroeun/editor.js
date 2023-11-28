@@ -654,17 +654,18 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
 
       this.listeners.on(button, 'click', (event) => {
         if (tool.linkType == 'link') {
+          this.toolClicked(tool);
           this.config.onLink(actions)
         }
         event.preventDefault();
       });
       this.nodes.actions.appendChild(actions);
+    } else {
+      this.listeners.on(button, 'click', (event) => {
+        this.toolClicked(tool);
+        event.preventDefault();
+      });
     }
-
-    this.listeners.on(button, 'click', (event) => {
-      this.toolClicked(tool);
-      event.preventDefault();
-    });
 
     const shortcut = this.getToolShortcut(toolName);
 

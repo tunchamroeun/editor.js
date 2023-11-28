@@ -72,11 +72,13 @@ export default class LinkInlineTool implements InlineTool {
     input: HTMLInputElement;
     div: HTMLDivElement;
     searchInput: HTMLInputElement;
+    ul: HTMLUListElement;
   } = {
       button: null,
       input: null,
       div: null,
       searchInput: null,
+      ul: null,
     };
 
   /**
@@ -140,6 +142,7 @@ export default class LinkInlineTool implements InlineTool {
     // Create div
     this.nodes.div = document.createElement('div') as HTMLDivElement
     this.nodes.div.classList.add(this.CSS.input);
+    this.nodes.div.classList.add('link-container');
     // Input
     this.nodes.input = document.createElement('input') as HTMLInputElement;
     this.nodes.input.type = 'hidden'
@@ -148,14 +151,16 @@ export default class LinkInlineTool implements InlineTool {
     this.nodes.searchInput.placeholder = this.i18n.t('Search...');
     this.nodes.searchInput.classList.add('custom');
     this.nodes.searchInput.classList.add(this.CSS.input);
-    this.nodes.searchInput.classList.add(this.CSS.inputShowed);
     this.nodes.input.addEventListener('keydown', (event: KeyboardEvent) => {
       if (event.keyCode === this.ENTER_KEY) {
         this.enterPressed(event);
       }
     });
+    // UL
+    this.nodes.ul = document.createElement('ul') as HTMLUListElement
     this.nodes.div.appendChild(this.nodes.input)
     this.nodes.div.appendChild(this.nodes.searchInput)
+    this.nodes.div.appendChild(this.nodes.ul)
     return this.nodes.div;
   }
 
@@ -210,7 +215,7 @@ export default class LinkInlineTool implements InlineTool {
     if (anchorTag) {
       this.nodes.button.classList.add(this.CSS.buttonUnlink);
       this.nodes.button.classList.add(this.CSS.buttonActive);
-      this.openActions();
+      this.openActions(false, true);
 
       /**
        * Fill input value with link href
@@ -218,6 +223,7 @@ export default class LinkInlineTool implements InlineTool {
       const hrefAttr = anchorTag.getAttribute('href');
 
       this.nodes.input.value = hrefAttr !== 'null' ? hrefAttr : '';
+      this.nodes.searchInput.value = this.nodes.input.value;
 
       this.selection.save();
     } else {
@@ -258,10 +264,13 @@ export default class LinkInlineTool implements InlineTool {
   /**
    * @param {boolean} needFocus - on link creation we need to focus input. On editing - nope.
    */
-  private openActions(needFocus = false): void {
+  private openActions(needFocus = false, hasLink = false): void {
     this.nodes.div.classList.add(this.CSS.inputShowed);
     if (needFocus) {
       this.nodes.input.focus();
+    }
+    if (!hasLink) {
+      this.nodes.searchInput.classList.add(this.CSS.inputShowed);
     }
     this.inputOpened = true;
   }
@@ -286,8 +295,10 @@ export default class LinkInlineTool implements InlineTool {
       currentSelection.restore();
     }
 
+    this.nodes.searchInput.classList.remove(this.CSS.inputShowed);
     this.nodes.div.classList.remove(this.CSS.inputShowed);
     this.nodes.input.value = '';
+    this.nodes.searchInput.value = '';
     if (clearSavedSelection) {
       this.selection.clearSaved();
     }
